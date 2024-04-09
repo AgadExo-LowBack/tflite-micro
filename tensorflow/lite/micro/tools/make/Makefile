@@ -40,12 +40,12 @@ else
 endif
 
 # Determine the host architecture, with any ix86 architecture being labelled x86_32
-HOST_ARCH := $(shell if uname -m | grep -Eq 'i[345678]86'; then echo x86_32; else echo $(shell uname -m); fi)
+# HOST_ARCH := $(shell if uname -m | grep -Eq 'i[345678]86'; then echo x86_32; else echo $(shell uname -m); fi)
 
 # Override these on the make command line to target a specific architecture. For example:
 # make -f tensorflow/lite/Makefile TARGET=rpi TARGET_ARCH=armv7l
 TARGET := $(HOST_OS)
-TARGET_ARCH := $(HOST_ARCH)
+TARGET_ARCH := cortex-m33
 
 # Default compiler and tool names:
 TOOLCHAIN:=gcc
@@ -596,7 +596,7 @@ MICROLITE_CC_SRCS := $(filter-out $(MICROLITE_BENCHMARK_SRCS), $(MICROLITE_CC_SR
 # The download scripts require that the downloads directory already exist for
 # improved error checking. To accomodate that, we first create a downloads
 # directory.
-$(shell mkdir -p ${DOWNLOADS_DIR})
+$(shell mkdir -p "${DOWNLOADS_DIR}")
 
 # Directly download the flatbuffers library.
 DOWNLOAD_RESULT := $(shell $(MAKEFILE_DIR)/flatbuffers_download.sh ${DOWNLOADS_DIR} $(TENSORFLOW_ROOT))
@@ -791,7 +791,7 @@ MICROLITE_KERNEL_OBJS := $(addprefix $(KERNEL_OBJDIR), \
 $(patsubst %.S,%.o,$(patsubst %.cc,%.o,$(patsubst %.c,%.o,$(MICROLITE_CC_KERNEL_SRCS)))))
 
 $(CORE_OBJDIR)%.o: %.cc $(THIRD_PARTY_TARGETS)
-	@mkdir -p $(dir $@)
+	@mkdir -p "$(dir $@)"
 	$(CXX) $(CXXFLAGS) $(CORE_OPTIMIZATION_LEVEL) $(INCLUDES) -c $< -o $@
 
 $(CORE_OBJDIR)%.o: %.c $(THIRD_PARTY_TARGETS)
@@ -827,7 +827,7 @@ $(THIRD_PARTY_KERNEL_OBJDIR)%.o: %.S $(THIRD_PARTY_KERNEL_TARGETS)
 	$(CC) $(CCFLAGS) $(THIRD_PARTY_KERNEL_OPTIMIZATION_LEVEL) $(INCLUDES) -c $< -o $@
 
 $(KERNEL_OBJDIR)%.o: %.cc $(THIRD_PARTY_TARGETS)
-	@mkdir -p $(dir $@)
+	@mkdir -p "$(dir $@)"
 	$(CXX) $(CXXFLAGS) $(KERNEL_OPTIMIZATION_LEVEL) $(INCLUDES) -c $< -o $@
 
 $(KERNEL_OBJDIR)%.o: %.c $(THIRD_PARTY_TARGETS)
@@ -842,7 +842,7 @@ microlite: $(MICROLITE_LIB_PATH)
 
 # Gathers together all the objects we've compiled into a single '.a' archive.
 $(MICROLITE_LIB_PATH): $(MICROLITE_LIB_OBJS) $(MICROLITE_KERNEL_OBJS) $(MICROLITE_THIRD_PARTY_OBJS) $(MICROLITE_THIRD_PARTY_KERNEL_OBJS) $(MICROLITE_CUSTOM_OP_OBJS)
-	@mkdir -p $(dir $@)
+	@mkdir -p "$(dir $@)"
 	$(AR) $(ARFLAGS) $(MICROLITE_LIB_PATH) $(MICROLITE_LIB_OBJS) \
 	$(MICROLITE_KERNEL_OBJS) $(MICROLITE_THIRD_PARTY_OBJS) $(MICROLITE_THIRD_PARTY_KERNEL_OBJS) $(MICROLITE_CUSTOM_OP_OBJS)
 
